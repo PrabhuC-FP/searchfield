@@ -425,7 +425,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
       searchController!.dispose();
     }
     if (widget.focusNode == null) {
-      _searchFocus!.dispose();
+      _searchFocus?.dispose();
     }
 
     removeOverlay();
@@ -455,10 +455,10 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
     } else {
       _searchFocus = FocusNode();
     }
-    _searchFocus!.addListener(() {
+    _searchFocus?.addListener(() {
       // When focus shifts to ListView prevent suggestions from rebuilding
       // when user navigates through suggestions using keyboard
-      if (_searchFocus!.hasFocus) {
+      if (_searchFocus?.hasFocus ?? false) {
         if (searchController!.text.isNotEmpty) {
           highlightIndex = widget.suggestions
               .indexWhere((element) => element == widget.selectedValue);
@@ -576,7 +576,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
     }
     if (highlightIndex == -1) {
       if (intent.isTabKey) {
-        _searchFocus!.previousFocus();
+        _searchFocus?.previousFocus();
       }
       return;
     }
@@ -671,12 +671,12 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
   // for onSubmitted callback of the textfield
   void handleSelectKeyPress(SelectionIntent<T> intent) {
     if (highlightIndex >= filteredResult.length || highlightIndex < 0) return;
-    _searchFocus!.unfocus();
+    _searchFocus?.unfocus();
     onSuggestionTapped(intent.selectedItem!, highlightIndex);
   }
 
   void handleUnFocusKeyPress(UnFocusIntent intent) {
-    _searchFocus!.unfocus();
+    _searchFocus?.unfocus();
     highlightIndex = -1;
     _overlayEntry!.markNeedsBuild();
   }
@@ -741,12 +741,12 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
       // suggestion action to switch focus to next focus node
       if (widget.suggestionAction != null) {
         if (widget.suggestionAction == SuggestionAction.next) {
-          _searchFocus!.nextFocus();
+          _searchFocus?.nextFocus();
         } else if (widget.suggestionAction == SuggestionAction.unfocus) {
-          _searchFocus!.unfocus();
+          _searchFocus?.unfocus();
         }
       } else {
-        _searchFocus!.unfocus();
+        _searchFocus?.unfocus();
       }
 
       filteredResult.clear();
@@ -777,7 +777,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
       builder: (BuildContext context,
           AsyncSnapshot<List<SearchFieldListItem<T>?>?> snapshot) {
         bool isEmpty = false;
-        if (snapshot.data == null || !_searchFocus!.hasFocus) {
+        if (snapshot.data == null || !(_searchFocus?.hasFocus ?? false)) {
           isSuggestionsShown = false;
           return SizedBox();
         } else if (snapshot.data!.isEmpty || widget.showEmpty) {
@@ -862,9 +862,9 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
         );
         return TextFieldTapRegion(
           onTapOutside: (x) {
-            _searchFocus!.unfocus();
+            _searchFocus?.unfocus();
             isSuggestionInFocus = false;
-            if (!_searchFocus!.hasFocus) {
+            if (!(_searchFocus?.hasFocus ?? false)) {
               removeOverlay();
             }
           },
