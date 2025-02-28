@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
-
+import 'dart:developer' as d;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:searchfield/src/decoration.dart';
@@ -433,10 +434,16 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
   }
 
   void removeOverlay() {
-    if (_overlayEntry != null && (_overlayEntry?.mounted ?? false)) {
-      isSuggestionsShown = false;
-      if (_overlayEntry != null) {
-        _overlayEntry?.remove();
+    try {
+      if (_overlayEntry != null && (_overlayEntry?.mounted ?? false)) {
+        isSuggestionsShown = false;
+        if (_overlayEntry != null) {
+          _overlayEntry?.remove();
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        d.log("${e.toString()}", name: "SearchField");
       }
     }
   }
