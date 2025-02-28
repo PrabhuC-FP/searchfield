@@ -76,9 +76,10 @@ class _CountrySearchState extends State<CountrySearch> {
                         return null;
                       },
                       inputType: TextInputType.text,
-                      onSuggestionTap: (SearchFieldListItem<Country> x) {
+                      onSuggestionTap: (SearchFieldListItem<Country>? x) {
                         setState(() {
-                          _selectedCountry = x.item!;
+                          var item = x?.item;
+                          if (item != null) _selectedCountry = item;
                         });
                         _formKey.currentState!.validate();
                       },

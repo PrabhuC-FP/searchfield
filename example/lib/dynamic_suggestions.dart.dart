@@ -49,7 +49,7 @@ class _DynamicSampleState extends State<DynamicSample> {
                 .toList(),
             focusNode: focus,
             suggestionState: Suggestion.expand,
-            onSuggestionTap: (SearchFieldListItem<Country> x) {
+            onSuggestionTap: (SearchFieldListItem<Country>? x) {
               focus.unfocus();
             },
           ),

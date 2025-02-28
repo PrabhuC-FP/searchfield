@@ -106,7 +106,7 @@ void main() {
                 .map(SearchFieldListItem<String>.new)
                 .toList(),
             selectedValue: selectedValue,
-            onSuggestionTap: (SearchFieldListItem<String> x) {
+            onSuggestionTap: (SearchFieldListItem<String>? x) {
               selectedValue = x;
             },
           ),
@@ -851,7 +851,7 @@ void main() {
                   .map(SearchFieldListItem<String>.new)
                   .toList(),
               selectedValue: selectedValue,
-              onSuggestionTap: (SearchFieldListItem<String> x) {
+              onSuggestionTap: (SearchFieldListItem<String>? x) {
                 selectedValue = x;
               },
             ),
@@ -1211,7 +1211,7 @@ void main() {
                 .map(SearchFieldListItem<String>.new)
                 .toList(),
             selectedValue: selectedValue,
-            onSuggestionTap: (SearchFieldListItem<String> x) {
+            onSuggestionTap: (SearchFieldListItem<String>? x) {
               selectedValue = x;
             },
           ),
@@ -1259,7 +1259,7 @@ void main() {
                 .map(SearchFieldListItem<String>.new)
                 .toList(),
             selectedValue: selectedValue,
-            onSuggestionTap: (SearchFieldListItem<String> x) {
+            onSuggestionTap: (SearchFieldListItem<String>? x) {
               selectedValue = x;
             },
           ),
@@ -1792,7 +1792,7 @@ void main() {
       },
       offset: Offset(50, 51),
       onSuggestionTap: (tapped) {
-        print(tapped.searchKey);
+        print(tapped?.searchKey);
       },
       inputType: TextInputType.text,
       hint: 'Search',

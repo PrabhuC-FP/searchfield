@@ -141,7 +141,7 @@ class _PaginationState extends State<Pagination> {
               .toList(),
           focusNode: focus,
           suggestionState: Suggestion.expand,
-          onSuggestionTap: (SearchFieldListItem<UserModel> x) {
+          onSuggestionTap: (SearchFieldListItem<UserModel>? x) {
             setState(() {
               selectedValue = x;
             });

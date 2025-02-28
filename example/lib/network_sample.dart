@@ -117,7 +117,7 @@ class _NetworkSampleState extends State<NetworkSample> {
               .toList(),
           focusNode: focus,
           suggestionState: Suggestion.expand,
-          onSuggestionTap: (SearchFieldListItem<String> x) {
+          onSuggestionTap: (SearchFieldListItem<String>? x) {
             focus.unfocus();
           },
         ),

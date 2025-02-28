@@ -92,9 +92,9 @@ class _SearchFieldSampleState extends State<SearchFieldSample> {
                 hint: 'Basic SearchField',
                 // dynamicHeight: true,
                 maxSuggestionBoxHeight: 300,
-                onSuggestionTap: (SearchFieldListItem<String> item) {
+                onSuggestionTap: (SearchFieldListItem<String>? item) {
                   setState(() {
-                    selectedValue = item;
+                    if (item != null) selectedValue = item;
                   });
                 },
                 selectedValue: selectedValue,

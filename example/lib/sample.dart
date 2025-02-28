@@ -122,9 +122,9 @@ class _SearchFieldSampleState extends State<SearchFieldSample> {
                 hint: 'Basic SearchField',
                 dynamicHeight: true,
                 maxSuggestionBoxHeight: 300,
-                onSuggestionTap: (SearchFieldListItem<String> item) {
+                onSuggestionTap: (SearchFieldListItem<String>? item) {
                   setState(() {
-                    selectedValue = item;
+                    if (item != null) selectedValue = item;
                   });
                 },
                 selectedValue: selectedValue,
@@ -166,9 +166,9 @@ class _SearchFieldSampleState extends State<SearchFieldSample> {
                     ),
                   ),
                   selectedValue: selectedValue,
-                  onSuggestionTap: (SearchFieldListItem<String> item) {
+                  onSuggestionTap: (SearchFieldListItem<String>? item) {
                     setState(() {
-                      selectedValue = item;
+                      if (item != null) selectedValue = item;
                     });
                   },
                   suggestions: suggestions
@@ -282,7 +282,7 @@ class _SearchFieldSampleState extends State<SearchFieldSample> {
                     .toList(),
                 focusNode: focus,
                 suggestionState: Suggestion.expand,
-                onSuggestionTap: (SearchFieldListItem<String> x) {},
+                onSuggestionTap: (SearchFieldListItem<String>? x) {},
               ),
               SizedBox(
                 height: 50,

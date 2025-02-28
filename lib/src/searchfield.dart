@@ -106,7 +106,7 @@ class SearchField<T> extends StatefulWidget {
 
   /// Callback when the suggestion is selected.
   /// The parameters passed to`SearchFieldListItem` in `suggestions` will be returned in the callback.
-  final Function(SearchFieldListItem<T>)? onSuggestionTap;
+  final Function(SearchFieldListItem<T>?)? onSuggestionTap;
 
   /// Callback when the searchfield is searched.
   /// The callback should return a list of SearchFieldListItem based on custom logic which will be
@@ -422,7 +422,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
     suggestionStream.close();
     _scrollController.dispose();
     if (widget.controller == null) {
-      searchController!.dispose();
+      searchController?.dispose();
     }
     if (widget.focusNode == null) {
       _searchFocus?.dispose();
@@ -433,7 +433,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
   }
 
   void removeOverlay() {
-    if (_overlayEntry != null && _overlayEntry!.mounted) {
+    if (_overlayEntry != null && (_overlayEntry?.mounted ?? false)) {
       isSuggestionsShown = false;
       if (_overlayEntry != null) {
         _overlayEntry?.remove();
@@ -459,7 +459,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
       // When focus shifts to ListView prevent suggestions from rebuilding
       // when user navigates through suggestions using keyboard
       if (_searchFocus?.hasFocus ?? false) {
-        if (searchController!.text.isNotEmpty) {
+        if (searchController?.text.isNotEmpty ?? false) {
           highlightIndex = widget.suggestions
               .indexWhere((element) => element == widget.selectedValue);
         }
@@ -470,7 +470,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
             suggestionStream.sink.add(widget.suggestions);
           });
         }
-        Overlay.of(context).insert(_overlayEntry!);
+        if (_overlayEntry != null) Overlay.of(context).insert(_overlayEntry!);
       } else {
         removeOverlay();
         if (_suggestionDirection == SuggestionDirection.up) {
@@ -496,17 +496,17 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final Size screenSize = mediaQuery.size;
     final EdgeInsets padding = mediaQuery.padding;
-    final RenderBox textFieldRenderBox =
-        key.currentContext!.findRenderObject() as RenderBox;
-    final Size textFieldSize = textFieldRenderBox.size;
-    final Offset textFieldOffset =
-        textFieldRenderBox.localToGlobal(Offset.zero);
+    final RenderBox? textFieldRenderBox =
+        key.currentContext?.findRenderObject() as RenderBox?;
+    final Size? textFieldSize = textFieldRenderBox?.size;
+    final Offset? textFieldOffset =
+        textFieldRenderBox?.localToGlobal(Offset.zero);
     final double suggestionsHeight = _getSuggestionsHeight(screenSize);
     final double spaceBelow = screenSize.height -
-        textFieldOffset.dy -
-        textFieldSize.height -
+        (textFieldOffset?.dy ?? 0) -
+        (textFieldSize?.height ?? 0) -
         padding.bottom;
-    final double spaceAbove = textFieldOffset.dy - padding.top;
+    final double spaceAbove = (textFieldOffset?.dy ?? 0) - padding.top;
     if (spaceBelow >= suggestionsHeight) {
       remainingHeight = spaceBelow;
       return SuggestionDirection.down;
@@ -556,12 +556,12 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
       if (mounted) {
         _overlayEntry = _createOverlay();
         if (widget.selectedValue == null ||
-            widget.selectedValue!.searchKey.isEmpty) {
+            (widget.selectedValue?.searchKey.isEmpty ?? false)) {
           suggestionStream.sink.add(null);
         } else {
           highlightIndex = widget.suggestions
               .indexWhere((element) => element == widget.selectedValue);
-          searchController!.text = widget.selectedValue!.searchKey;
+          searchController?.text = widget.selectedValue?.searchKey ?? "";
           suggestionStream.sink.add([widget.selectedValue]);
         }
       }
@@ -571,7 +571,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
   void handlePreviousKeyPress(PreviousIntent intent) {
     if (intent.scrollToTop == true) {
       _scrollToTop();
-      _overlayEntry!.markNeedsBuild();
+      _overlayEntry?.markNeedsBuild();
       return;
     }
     if (highlightIndex == -1) {
@@ -594,7 +594,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
     _scrollController.animateTo(targetPosition,
         duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
 
-    _overlayEntry!.markNeedsBuild();
+    _overlayEntry?.markNeedsBuild();
   }
 
   // for directionUp list is reversed so pressing up key will scroll to bottom
@@ -672,22 +672,22 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
   void handleSelectKeyPress(SelectionIntent<T> intent) {
     if (highlightIndex >= filteredResult.length || highlightIndex < 0) return;
     _searchFocus?.unfocus();
-    onSuggestionTapped(intent.selectedItem!, highlightIndex);
+    onSuggestionTapped(intent.selectedItem, highlightIndex);
   }
 
   void handleUnFocusKeyPress(UnFocusIntent intent) {
     _searchFocus?.unfocus();
     highlightIndex = -1;
-    _overlayEntry!.markNeedsBuild();
+    _overlayEntry?.markNeedsBuild();
   }
 
   @override
   void didChangeDependencies() {
     // update overlay dimensions on mediaQuery change
-    if (_overlayEntry != null && _overlayEntry!.mounted) {
+    if (_overlayEntry != null && (_overlayEntry?.mounted ?? false)) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         if (mounted) {
-          _overlayEntry!.markNeedsBuild();
+          _overlayEntry?.markNeedsBuild();
         }
       });
     }
@@ -723,7 +723,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
     if (oldWidget.selectedValue != widget.selectedValue) {
       // highlightIndex = widget.suggestions
       //     .indexWhere((element) => element == widget.selectedValue);
-      searchController!.text = widget.selectedValue?.searchKey ?? '';
+      searchController?.text = widget.selectedValue?.searchKey ?? '';
     }
     if (oldWidget.searchInputDecoration != widget.searchInputDecoration) {
       widget.searchInputDecoration =
@@ -735,7 +735,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
 
   // This index will be different for searchResults
   // and suggestions list, invoked by pressing enter key or tap
-  void onSuggestionTapped(SearchFieldListItem<T> item, int index) {
+  void onSuggestionTapped(SearchFieldListItem<T>? item, int index) {
     {
       highlightIndex = index;
       // suggestion action to switch focus to next focus node
@@ -753,9 +753,9 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
       filteredResult.addAll(widget.suggestions);
       // hide the suggestions
       suggestionStream.sink.add(null);
-      searchController!.text = item.searchKey;
+      searchController?.text = (item?.searchKey ?? "");
       if (widget.onSuggestionTap != null) {
-        widget.onSuggestionTap!(item);
+        widget.onSuggestionTap?.call(item);
       }
 
       highlightIndex =
@@ -780,24 +780,24 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
         if (snapshot.data == null || !(_searchFocus?.hasFocus ?? false)) {
           isSuggestionsShown = false;
           return SizedBox();
-        } else if (snapshot.data!.isEmpty || widget.showEmpty) {
+        } else if ((snapshot.data?.isEmpty ?? false) || widget.showEmpty) {
           isEmpty = true;
           _totalHeight = 0;
         } else if (widget.dynamicHeight) {
           _totalHeight = null;
         } else {
           final paddingHeight = widget.suggestionsDecoration != null
-              ? widget.suggestionsDecoration!.padding.vertical
+              ? widget.suggestionsDecoration?.padding.vertical
               : 0;
-          if (snapshot.data!.length > widget.maxSuggestionsInViewPort) {
+          if ((snapshot.data?.length ?? 0) > widget.maxSuggestionsInViewPort) {
             _totalHeight = widget.itemHeight * widget.maxSuggestionsInViewPort +
-                paddingHeight;
+                (paddingHeight ?? 0);
             // print(_totalHeight);
-          } else if (snapshot.data!.length == 1) {
-            _totalHeight = widget.itemHeight + paddingHeight;
+          } else if (snapshot.data?.length == 1) {
+            _totalHeight = widget.itemHeight + (paddingHeight ?? 0);
           } else {
             _totalHeight =
-                snapshot.data!.length * widget.itemHeight + paddingHeight;
+                (snapshot.data?.length ?? 0) * widget.itemHeight + (paddingHeight ?? 0);
           }
         }
         if (isEmpty) {
@@ -812,24 +812,24 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
           height: _totalHeight,
           alignment: Alignment.centerLeft,
           child: RawScrollbar(
-            thumbVisibility: _scrollbarDecoration!.thumbVisibility,
+            thumbVisibility: _scrollbarDecoration?.thumbVisibility,
             controller: _scrollController,
             padding: EdgeInsets.zero,
-            shape: _scrollbarDecoration!.shape,
-            fadeDuration: _scrollbarDecoration!.fadeDuration,
-            radius: _scrollbarDecoration!.radius,
-            thickness: _scrollbarDecoration!.thickness,
-            thumbColor: _scrollbarDecoration!.thumbColor,
-            minThumbLength: _scrollbarDecoration!.minThumbLength,
-            trackRadius: _scrollbarDecoration!.trackRadius,
-            trackVisibility: _scrollbarDecoration!.trackVisibility,
-            timeToFade: _scrollbarDecoration!.timeToFade,
-            pressDuration: _scrollbarDecoration!.pressDuration,
-            trackBorderColor: _scrollbarDecoration!.trackBorderColor,
-            trackColor: _scrollbarDecoration!.trackColor,
-            interactive: _scrollbarDecoration!.interactive,
-            scrollbarOrientation: _scrollbarDecoration!.orientation,
-            crossAxisMargin: _scrollbarDecoration!.crossAxisMargin!,
+            shape: _scrollbarDecoration?.shape,
+            fadeDuration: _scrollbarDecoration?.fadeDuration ?? Durations.medium3,
+            radius: _scrollbarDecoration?.radius,
+            thickness: _scrollbarDecoration?.thickness,
+            thumbColor: _scrollbarDecoration?.thumbColor,
+            minThumbLength: (_scrollbarDecoration?.minThumbLength ?? 0),
+            trackRadius: _scrollbarDecoration?.trackRadius,
+            trackVisibility: _scrollbarDecoration?.trackVisibility,
+            timeToFade: _scrollbarDecoration?.timeToFade ?? Durations.medium3,
+            pressDuration: _scrollbarDecoration?.pressDuration ?? Durations.medium3,
+            trackBorderColor: _scrollbarDecoration?.trackBorderColor,
+            trackColor: _scrollbarDecoration?.trackColor,
+            interactive: _scrollbarDecoration?.interactive,
+            scrollbarOrientation: _scrollbarDecoration?.orientation,
+            crossAxisMargin: _scrollbarDecoration?.crossAxisMargin ?? 0,
             child: ScrollConfiguration(
                 behavior:
                     ScrollConfiguration.of(context).copyWith(scrollbars: false),
@@ -849,14 +849,14 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
                   onScroll: widget.onScroll,
                   onTapOutside: (x) {
                     if (widget.onTapOutside != null) {
-                      widget.onTapOutside!(x);
+                      widget.onTapOutside?.call(x);
                     }
                   },
                   onSuggestionTapped: onSuggestionTapped,
                   suggestionItemDecoration: widget.suggestionItemDecoration,
                   suggestionsDecoration: widget.suggestionsDecoration,
                   marginColor: widget.marginColor,
-                  list: snapshot.data! as List<SearchFieldListItem<T>>,
+                  list: snapshot.data as List<SearchFieldListItem<T>>,
                 )),
           ),
         );
@@ -894,7 +894,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
           return Offset(
               0,
               widget.maxSuggestionBoxHeight != null
-                  ? -widget.maxSuggestionBoxHeight!
+                  ? -(widget.maxSuggestionBoxHeight ?? 0)
                   : -remainingHeight);
         }
 
@@ -913,7 +913,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
   OverlayEntry _createOverlay() {
     return OverlayEntry(builder: (context) {
       final textFieldRenderBox =
-          key.currentContext!.findRenderObject() as RenderBox;
+          key.currentContext?.findRenderObject() as RenderBox;
       final textFieldsize = textFieldRenderBox.size;
       final offset = textFieldRenderBox.localToGlobal(Offset.zero);
       var yOffset = Offset.zero;
@@ -924,7 +924,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
               AsyncSnapshot<List<SearchFieldListItem?>?> snapshot) {
             late var count = widget.maxSuggestionsInViewPort;
             if (snapshot.data != null) {
-              count = snapshot.data!.length;
+              count = snapshot.data?.length ?? 0;
             }
             yOffset = getYOffset(offset, textFieldsize, count) ?? Offset.zero;
             return Positioned(
@@ -950,7 +950,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
   void _onSearchChanged(String query) {
     filteredResult.clear();
     if (widget.onSearchTextChanged != null) {
-      filteredResult = widget.onSearchTextChanged!(query) ?? [];
+      filteredResult = widget.onSearchTextChanged?.call(query) ?? [];
     } else {
       if (query.isEmpty) {
         filteredResult.addAll(widget.suggestions);
@@ -1032,7 +1032,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
               key: key,
               contextMenuBuilder: (context, state) {
                 if (widget.contextMenuBuilder != null) {
-                  return widget.contextMenuBuilder!(context, state);
+                  return widget.contextMenuBuilder?.call(context, state) ?? Container();
                 } else {
                   return AdaptiveTextSelectionToolbar.editableText(
                       editableTextState: state);
@@ -1055,14 +1055,14 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
                   }
                 } else {
                   // onSuggestiontap will fire anyways
-                  if (widget.onSubmit != null) widget.onSubmit!(x);
+                  if (widget.onSubmit != null) widget.onSubmit?.call(x);
                 }
               },
               onTap: () {
                 widget.onTap?.call();
               },
               onSaved: (x) {
-                if (widget.onSaved != null) widget.onSaved!(x);
+                if (widget.onSaved != null) widget.onSaved?.call(x);
               },
               maxLength: widget.maxLength,
               maxLengthEnforcement: widget.maxLengthEnforcement,
@@ -1082,7 +1082,7 @@ class _SearchFieldState<T> extends State<SearchField<T>> {
               style: widget.searchInputDecoration?.searchStyle,
               textInputAction: widget.textInputAction,
               textCapitalization:
-                  widget.searchInputDecoration!.textCapitalization,
+                  widget.searchInputDecoration?.textCapitalization ?? TextCapitalization.none,
               keyboardType: widget.inputType,
               cursorColor: widget.searchInputDecoration?.cursorColor,
               decoration: widget.searchInputDecoration
